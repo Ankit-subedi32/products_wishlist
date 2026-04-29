@@ -3,7 +3,7 @@
 
 <head>
     <title>Title</title>
-    <!-- Required meta tags -->
+    <!--  meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -16,31 +16,79 @@
     <?php
 
     include "../config/connection.php";
+    $errors = [];
+    function test($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
+    $name_pattern = "/^[A-Z][a-z]+(?: [A-Z][a-z]+)*$/";
+    $phone_pattern = "/^[0-9+\-\s]{7,15}$/";
+    $password_pattern = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{8,}$/";
     if (isset($_POST['register'])) {
-        $firstname = $_POST['firstname'];
-        $lastname = $_POST['lastname'];
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+        $firstname = test($_POST['firstname']);
+        $lastname = test($_POST['lastname']);
+        $username = test($_POST['username']);
+        $password = test($_POST['password']);
 
-        $stmt = $conn->prepare("INSERT INTO users (firstname,lastname, username, password  )VALUES (?,?,?,?) ");
-        if ($stmt === false) {
-    die("Prepare failed: " . $conn->error);
-}
-        $stmt->bind_param("ssss" ,$firstname,$lastname , $username ,$hashedpassword);
 
-        $stmt->execute();
+
+        if (!preg_match($name_pattern, $firstname)) {
+            $errors[] = "Invalid firstname format";
+        }
+        if (!preg_match($name_pattern, $lastname)) {
+            $errors[] = "Invalid lastname format";
+        }
+        if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = "Invalid email format";
+        }
+        if (!preg_match($password_pattern, $password)) {
+            $errors[] = "Weak password";
+        }
+
+
+        if (empty($firstname) || empty($lastname) || empty($username) || empty($password)) {
+            $errors[] = "Please Fill all fileds";
+        }
+
+
+        if (empty($errors)) {
+            $hashedpassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt = $conn->prepare("INSERT INTO users (firstname,lastname, username, password  )VALUES (?,?,?,?) ");
+            if ($stmt === false) {
+                die("Prepare failed: " . $conn->error);
+            }
+            $stmt->bind_param("ssss", $firstname, $lastname, $username, $hashedpassword);
+            if ($stmt->execute()) {
+                echo "<script>alert('Signup successful')</script>";
+                echo "<script>window.location='login.php'</script>";
+            } else {
+                echo "Database Error: " . $conn->error;
+            }
+            $stmt->close();
+
+        } else {
+            foreach ($errors as $error) {
+                echo " <div class='alert alert-danger'>$error</div>";
+            }
+        }
+
+
 
     }
 
     ?>
     <div class="container">
-
         <form action="" method="post">
             <div class="form-group">
                 <label for="">Firstname:</label>
                 <input type="text" name="firstname" id="firstname" class="form-control" placeholder=""
                     aria-describedby="helpId">
+
+                <small id="firstnameMsg" class="text-danger"></small>
             </div>
 
 
@@ -48,26 +96,72 @@
                 <label for="">Lastname:</label>
                 <input type="text" name="lastname" id="lastname" class="form-control" placeholder=""
                     aria-describedby="helpId">
+                <small id="lastnameMsg" class="text-danger"></small>
             </div>
 
             <div class="form-group">
                 <label for="">Username(Email):</label>
-                <input type="text" name="username" id="username" class="form-control" placeholder=""
+                <input type="email" name="username" id="username" class="form-control" placeholder=""
                     aria-describedby="helpId">
+                <small id="usernameMsg" class="text-danger"></small>
             </div>
 
             <div class="form-group">
                 <label for="">Password:</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder=""
                     aria-describedby="helpId">
+                <small id="passwordMsg" class="text-danger"></small>
             </div>
             <div class="text-center">
                 <button type="submit" name="register" class="btn btn-primary">Submit</button>
-                <button type="clear" class="btn btn-danger">Reset</button>
+                <button type="reset" class="btn btn-danger">Reset</button>
             </div>
 
         </form>
     </div>
+
+    <script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+            let valid = true;
+
+            let firstname = document.querySelector("[name='firstname']").value.trim();
+            let lastname = document.querySelector("[name='lastname']").value.trim();
+            let email = document.querySelector("[name='username']").value.trim();
+            let password = document.querySelector("[name='password']").value.trim();
+
+            let namePattern = /^[A-Z][a-z]+(?: [A-Z][a-z]+)*$/;
+            let passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#]).{8,}$/;
+            let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            document.getElementById("firstnameMsg").innerText = "";
+            document.getElementById("lastnameMsg").innerText = "";
+            document.getElementById("usernameMsg").innerText = "";
+            document.getElementById("passwordMsg").innerText = "";
+
+            if (!namePattern.test(firstname)) {
+                document.getElementById("firstnameMsg").innerText = "Firstname must start with capital letter";
+                valid = false;
+            }
+            if (!namePattern.test(lastname)) {
+                document.getElementById("lastnameMsg").innerText = "Invalid lastname format";
+                valid = false;
+            }
+            if (!emailPattern.test(email)) {
+                document.getElementById("usernameMsg").innerText = "Invalid email format";
+                valid = false;
+            }
+            if (!passwordPattern.test(password)) {
+                document.getElementById("passwordMsg").innerText =
+                    "Password must contain: uppercase, lowercase, number, special character, and be 8+ characters long";
+                valid = false;
+            }
+
+            if (!valid) {
+                e.preventDefault(); // stop submission
+            }
+        });
+
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
