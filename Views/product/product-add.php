@@ -26,10 +26,56 @@ if (!isset($_SESSION['user_id'])) {
     <?php
 
     include __DIR__ . "/../../Config/connection.php";
+
+    $imgPath = null;
+    function test($data)
+    {
+        $data = trim($data);
+        $data = stripslashes($data);
+        $data = htmlspecialchars($data);
+        return $data;
+    }
+
     if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         $target_file = '';
-        $imgPath = null;
+
+        if (empty($_POST["name"])) {
+            $nameErr = "Cannot be Empty";
+
+        } else {
+            $name = test($_POST["name"]);
+            if (!preg_match("/^[A-Za-z]+(?: [A-Za-z]+)*$/", $name)) {
+                $nameErr = "Invalid Name Fomat";
+            }
+
+
+        }
+        if (empty($_POST["description"])) {
+            $descErr = "Cannot be Empty";
+
+        } else {
+            $description = test($_POST["description"]);
+            if (!preg_match("/^[A-Za-z0-9 .,!?'-]+$/", $description)) {
+                $descErr = "Invalid Description Format";
+            }
+
+        }
+        if (empty($_POST["price"])) {
+            $descErr = "Cannot be Empty";
+
+        } else {
+            $price = test($_POST["price"]);
+            if (!preg_match("/^[0-9]+(\.[0-9]{1,2})?$/", $price)) {
+                $priceErr = "Invalid Price Format";
+            }
+
+        }
+
+
+
+
+
         if (!empty($_FILES["imgPath"]["name"])) {
             $target_dir = "../../assets/image/";
             // upload folder ma image janxa
@@ -37,8 +83,30 @@ if (!isset($_SESSION['user_id'])) {
             $uploadOk = 1;
             $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
             $check = getimagesize($_FILES["imgPath"]["tmp_name"]);   // return array like height , width, mime 
-            if ($check !== false) {
-                echo "File is an image - " . $check["mime"] . ".";  // mime chai file type dinxa like image/jpeg , text/html
+            if ($check === false) {
+                $fileErr = "File is not an image.";
+                $uploadOk = 0;
+            }
+            
+            // Check file size
+            if ($_FILES["imgPath"]["size"] > 500000) {
+                echo "Sorry, your file is too large.";
+                $uploadOk = 0;
+            }
+
+            // Allow certain file formats
+            if (
+                $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+                && $imageFileType != "gif"
+            ) {
+                echo "<div class='alert alert-danger'>Sorry, only JPG, JPEG, PNG & GIF files are allowed.</div>";
+
+                $uploadOk = 0;
+            }
+
+            // Check if $uploadOk is set to 0 by an error
+            if ($uploadOk == 0) {
+                echo "Sorry, your file was not uploaded.";
             }
             if ($uploadOk == 1) {
                 if (move_uploaded_file($_FILES["imgPath"]["tmp_name"], $target_file)) {
@@ -54,27 +122,41 @@ if (!isset($_SESSION['user_id'])) {
 
 
 
-        $name = $_POST['name'];
-        // $imgPath = $_FILES['imgPath'];
-        $description = $_POST['description'];
-        $price = $_POST['price'];
-        $user_id = $_SESSION['user_id'];
+        if (!empty($name) && !empty($description) && !empty($imgPath) && !empty($price)) {
 
-        $stmt = $conn->prepare("INSERT INTO products (name, imgPath, description, price, user_id) VALUES (?,?,?,?,?)");
-        if ($stmt === false) {
-            die("Prepare failed: " . $conn->error);
+
+            $name = $_POST['name'];
+            $description = $_POST['description'];
+            $price = $_POST['price'];
+            $user_id = $_SESSION['user_id'];
+            $checkSql = "SELECT id FROM products WHERE name = ? AND imgPath = ? AND description = ? AND price =? AND user_id =?";
+            $checkStmt = $conn->prepare($checkSql);
+            $checkStmt->bind_param("sssdi", $name, $imgPath, $description, $price, $user_id);
+            $checkStmt->execute();
+            $checkStmt->store_result();   // pull rows(memory ma save gar aaila paxi check garxu vaneko jasto)
+            if ($checkStmt->num_rows > 0) {
+                //already exist xa file 
+                echo "<div class='alert alert-danger'>Error: A news item with this name already exists</div>";
+            } else {
+                $stmt = $conn->prepare("INSERT INTO products (name, imgPath, description, price, user_id) VALUES (?,?,?,?,?)");
+                if ($stmt === false) {
+                    die("Prepare failed: " . $conn->error);
+                }
+                $stmt->bind_param("sssdi", $name, $imgPath, $description, $price, $user_id);
+
+                if ($stmt->execute()) {
+                    echo "Product added successfully!";
+                    header("Location: " . $_SERVER['PHP_SELF']); // for prevention of form submition on page reaload
+                    exit();
+
+                } else {
+                    echo "Error inserting product: " . $stmt->error;
+                }
+                $stmt->close();
+            }
+            $checkStmt->close();
+            $conn->close();
         }
-        $stmt->bind_param("sssdi", $name, $imgPath, $description, $price, $user_id);
-
-        if ($stmt->execute()) {
-            echo "Product added successfully!";
-            header("Location: " . $_SERVER['PHP_SELF']); // for prevention of form submition on page reaload
-            exit();
-
-        } else {
-            echo "Error inserting product: " . $stmt->error;
-        }
-
 
 
 
@@ -82,37 +164,53 @@ if (!isset($_SESSION['user_id'])) {
 
     ?>
     <div class="container">
-
         <form action="<?php echo $_SERVER['PHP_SELF'] ?>" method="post" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="">Name:</label>
+                <label for="">Product Name:</label>
                 <input type="text" name="name" id="name" class="form-control" placeholder="" aria-describedby="helpId">
-                <small id="helpId" class="text-muted">Help text</small>
+                <small class="text-danger" id="helpId" class="text-muted"><?php if (!empty($nameErr))
+                    echo $nameErr; ?></small>
             </div>
+              <?php
+
+echo "<pre>";
+print_r($_SESSION['role'] ?? 'ROLE NOT SET');
+echo "</pre>";
+?>
             <div class="form-group">
                 <label for="">Image:</label>
                 <input type="file" name="imgPath" id="imgPath"><br>
-                <small id="helpId" class="text-muted">Help text</small>
+                <small class="text-danger" id="helpId" class="text-muted"><?php if (!empty($fileErr))
+                    echo $fileErr; ?></small>
             </div>
 
             <div class="form-group">
                 <label for="">Description:</label>
                 <input type="text" name="description" id="description" class="form-control" placeholder=""
                     aria-describedby="helpId">
-                <small id="helpId" class="text-muted">Help text</small>
+                <small class="text-danger" id="helpId" class="text-muted"><?php if (!empty($descErr))
+                    echo $descErr; ?></small>
             </div>
             <div class="form-group">
                 <label for="">Price:</label>
                 <input type="text" name="price" id="price" class="form-control" placeholder=""
                     aria-describedby="helpId">
-                <small id="helpId" class="text-muted">Help text</small>
+                <small class="text-danger" id="helpId" class="text-muted"><?php if (!empty($priceErr))
+                    echo $priceErr; ?></small>
             </div>
             <div class="text-center">
                 <button type="submit" class="btn btn-success" name="submit">Submit</button>
                 <button type="reset" class="btn btn-danger">Reset</button>
+                <a href="index.php" class="btn btn-info">All Products</a>
             </div>
         </form>
     </div>
+
+
+    <script>
+
+
+    </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
