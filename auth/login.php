@@ -20,7 +20,7 @@ if(isset($_POST['login'])){
   $username = $_POST['username'];
   $password = $_POST['password'];
 
-  $stmt = $conn->prepare("SELECT username , password FROM users where username = ?");
+  $stmt = $conn->prepare("SELECT id , username , password ,role  FROM users where username = ?");
   $stmt->bind_param("s" ,$username);
   $stmt->execute();
   $result = $stmt->get_result();
@@ -30,6 +30,7 @@ if(isset($_POST['login'])){
      if(password_verify($password , $row['password'])){
       $_SESSION['user_id'] = $row['id'];
       $_SESSION['username'] = $row['username'];
+      $_SESSION['role'] = $row['role'];
       header("location: ../Views/product/index.php");
       exit();
   }
