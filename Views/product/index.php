@@ -41,8 +41,7 @@ if (!isset($_SESSION['user_id'])) {
       <tbody>
 
         <?php
-        
-        if ($_SESSION['role'] == "user") {
+        if ($_SESSION['role'] == "admin") {
           //   paxi aadmin role gatrya paxi halna ko laghi
           $sql = "SELECT * FROM products";
           $result = $conn->query($sql);

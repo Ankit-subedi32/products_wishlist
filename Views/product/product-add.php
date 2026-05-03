@@ -87,7 +87,7 @@ if (!isset($_SESSION['user_id'])) {
                 $fileErr = "File is not an image.";
                 $uploadOk = 0;
             }
-            
+
             // Check file size
             if ($_FILES["imgPath"]["size"] > 500000) {
                 echo "Sorry, your file is too large.";
@@ -171,12 +171,6 @@ if (!isset($_SESSION['user_id'])) {
                 <small class="text-danger" id="helpId" class="text-muted"><?php if (!empty($nameErr))
                     echo $nameErr; ?></small>
             </div>
-              <?php
-
-echo "<pre>";
-print_r($_SESSION['role'] ?? 'ROLE NOT SET');
-echo "</pre>";
-?>
             <div class="form-group">
                 <label for="">Image:</label>
                 <input type="file" name="imgPath" id="imgPath"><br>

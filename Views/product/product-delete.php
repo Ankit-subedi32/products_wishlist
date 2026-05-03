@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+$user_role = $_SESSION['role']; 
 
 if (isset($_GET['id'])) {
 
@@ -21,7 +22,7 @@ if (isset($_GET['id'])) {
         echo "Products not found!";
         exit();
     }
-    if ($row['user_id'] == $user_id) {
+    if ($row['user_id'] == $user_id || $user_role === 'admin' ) {
         $del = $conn->prepare("DELETE FROM products WHERE id = ?");
         $del->bind_param("i", $id);
         $result = $del->execute();
