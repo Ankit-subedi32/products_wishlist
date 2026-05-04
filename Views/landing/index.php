@@ -86,7 +86,7 @@ $result = $stmt->get_result();
     <h2>
         <?php
         if (isset($_SESSION['role'])) {
-            if ($_SESSION['role'] == 'user' || $_SESSION['role'] == 'admin') {
+            if ($_SESSION['role'] == 'user' || $_SESSION['role'] == 'admin' ||  $_SESSION['role'] == 'superadmin') {
                 echo "Welcome, " . $_SESSION['name'];
             }
         }
@@ -154,7 +154,9 @@ $result = $stmt->get_result();
         <ul class="pagination justify-content-center">
 
             <!-- PREVIOUS -->
-            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">
+             <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne  -->
+            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">   
+            
                 <a class="page-link"
                    href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>">
                     Previous
