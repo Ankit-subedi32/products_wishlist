@@ -22,7 +22,7 @@ if (isset($_GET['id'])) {
         echo "Products not found!";
         exit();
     }
-    if ($row['user_id'] == $user_id || $user_role === 'admin' ) {
+    if ($row['user_id'] == $user_id || $user_role === 'superadmin' ) {
         $del = $conn->prepare("DELETE FROM products WHERE id = ?");
         $del->bind_param("i", $id);
         $result = $del->execute();
