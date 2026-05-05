@@ -13,7 +13,7 @@ $sql = "SELECT products.*, wishlist.id AS wid
         FROM wishlist
         JOIN products ON wishlist.product_id = products.id
         WHERE wishlist.user_id = ?";
-
+//join  = inner join hunxa 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -32,7 +32,10 @@ $result = $stmt->get_result();
     <h2>My Wishlist</h2>
 
     <div class="row text-center">
-        <?php while ($row = $result->fetch_assoc()) { ?>
+        <?php 
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+    foreach($rows as $row)
+        { ?>
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <img src="../../<?= $row['imgPath']; ?>" height="200">

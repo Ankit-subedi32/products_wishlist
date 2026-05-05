@@ -80,6 +80,7 @@ if (!isset($_SESSION['user_id'])) {
 
           <div class="form-group">
             <label>Role:</label><br>
+            <!-- role user vaya checked hunxa natra khali hunxa   -->
             <input type="radio" name="role" value="user" <?= ($row['role'] == 'user') ? 'checked' : '' ?>>
             User
 

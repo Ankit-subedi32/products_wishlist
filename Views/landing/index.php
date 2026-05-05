@@ -1,13 +1,12 @@
 <?php
 include __DIR__ . "/../../Config/connection.php";
 session_start();
-
-
 $search = "";
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 }
+
 
 $limit = 6;    // yeuta page ma kati rakhne vanyara 
 
@@ -62,6 +61,11 @@ $stmt->bind_param("sssii", $searchLike, $searchLike, $searchLike, $limit, $offse
 $stmt->execute();
 
 $result = $stmt->get_result();
+
+if(isset($_SESSION['wishlist_error'])){
+    echo "<div class='alert alert-danger'>".$_SESSION['wishlist_error']."</div>";
+    unset($_SESSION['wishlist_error']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -76,16 +80,7 @@ $result = $stmt->get_result();
 
     <div class="container mt-4">
 
-        <?php
-        if (isset($_SESSION['user_id'])) {
-            ?>
-
-
-            <a href="../../auth/logout.php?location=landing" class="btn btn-danger">Logout</a>
-            <?php
-        }
-
-        ?>
+        <!-- WELCOME -->
         <h2>
             <?php
             if (isset($_SESSION['role'])) {
@@ -95,6 +90,8 @@ $result = $stmt->get_result();
             }
             ?>
         </h2>
+
+        <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
 
         <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
         <a href="/wishlist/auth/login.php" class="btn btn-warning">Login</a>
@@ -116,6 +113,25 @@ $result = $stmt->get_result();
 
         <!-- PRODUCT LIST -->
         <div class="row text-center">
+
+            <?php
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+            foreach ($rows as $row) {
+                ?>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="card">
+
+                        <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>" height="200">
+
+                        <div class="card-body">
+
+                            <h5><?php echo htmlspecialchars($row['name']); ?></h5>
+
+                            <p><?php echo htmlspecialchars($row['description']); ?></p>
+
+                            <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
 
             <?php
             $rows = $result->fetch_all(MYSQLI_ASSOC);
@@ -158,7 +174,7 @@ $result = $stmt->get_result();
             <ul class="pagination justify-content-center">
 
                 <!-- PREVIOUS -->
-                <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne disable le chai html ko class ma disabled vanyara garxa tei vayara echo garyako  -->
+                <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne  -->
                 <li class="page-item <?php if ($page <= 1)
                     echo 'disabled'; ?>">
 
