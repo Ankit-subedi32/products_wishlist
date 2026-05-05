@@ -44,7 +44,6 @@ if (!isset($_SESSION['user_id'])) {
 
         <?php
         if ($_SESSION['role'] == "superadmin") {
-          //   paxi aadmin role gatrya paxi halna ko laghi
           $sql = "SELECT * FROM products";
           $result = $conn->query($sql);
         } else {

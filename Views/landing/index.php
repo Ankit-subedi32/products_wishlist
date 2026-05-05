@@ -2,18 +2,13 @@
 include __DIR__ . "/../../Config/connection.php";
 session_start();
 
-/* ---------------------------
-   GET SEARCH VALUE
-----------------------------*/
+
 $search = "";
 
 if (isset($_GET['search'])) {
     $search = $_GET['search'];
 }
 
-/* ---------------------------
-   PAGINATION SETUP
-----------------------------*/
 $limit = 6;    // yeuta page ma kati rakhne vanyara 
 
 $page = 1;      // default page 1(suru ma kun aaune)
@@ -82,7 +77,16 @@ $result = $stmt->get_result();
 
 <div class="container mt-4">
 
-    <!-- WELCOME -->
+<?php
+if(isset($_SESSION['user_id'])){
+    ?>
+    
+
+     <a href="../../auth/logout.php" class="btn btn-danger">Logout</a>
+     <?php
+}
+
+?>
     <h2>
         <?php
         if (isset($_SESSION['role'])) {
@@ -154,7 +158,7 @@ $result = $stmt->get_result();
         <ul class="pagination justify-content-center">
 
             <!-- PREVIOUS -->
-             <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne  -->
+             <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne disable le chai html ko class ma disabled vanyara garxa tei vayara echo garyako  -->
             <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">   
             
                 <a class="page-link"

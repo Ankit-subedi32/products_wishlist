@@ -13,6 +13,11 @@ $user_id = $_SESSION['user_id'];
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
+    if($_SESSION['role'] == 'superadmin'){
+      $stmt = $conn->prepare("SELECT * FROM products WHERE id=?" );
+    $stmt->bind_param("i", $id);
+    }
+
     $stmt = $conn->prepare("SELECT * FROM products WHERE id=? AND user_id=?");
     $stmt->bind_param("ii", $id, $user_id);
     $stmt->execute();

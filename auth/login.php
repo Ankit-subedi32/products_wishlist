@@ -18,7 +18,6 @@
 
   session_start();
   include "../config/connection.php";
-
   if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
