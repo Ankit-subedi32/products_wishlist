@@ -21,9 +21,12 @@ if ($result->num_rows == 0) {
     $stmt->bind_param("ii", $user_id, $product_id);
     $stmt->execute();
 }
+else{
+ $_SESSION['wishlist_error'] =  "Already in wishlist";
+}
 
 // redirect back
-header("Location: index.php");
+header("Location: ../landing/index.php");
 exit();
 
 ?>

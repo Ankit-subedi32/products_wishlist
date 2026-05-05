@@ -36,13 +36,11 @@ if (!isset($_SESSION['user_id'])) {
 
     <div class="container">
 
-      <?php if ($_SESSION['role'] == 'superadmin') { ?>
+   
         <a href="../product/index.php" class="btn btn-secondary mb-3">All Products</a>
-      <?php } ?>
+      
 
-      <?php if ($_SESSION['role'] == 'admin') { ?>
-        <a href="news.php" class="btn btn-secondary mb-3">all products</a>
-      <?php } ?>
+    
 
       <!-- TABLE START (ONLY ONCE) -->
       <table class="table">

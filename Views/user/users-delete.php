@@ -6,8 +6,8 @@ if (!isset($_SESSION['user_id'])) {
  header("Location: /../../auth/login.php");
     exit();
 }
-// user le admin ko delete garna mildaina 
-if ($_SESSION['role'] !== 'admin') {
+// user le superadmin ko delete garna mildaina 
+if ($_SESSION['role'] !== 'superadmin') {
     echo "Access denied!";
     exit();
 }
