@@ -93,6 +93,10 @@ if(isset($_SESSION['wishlist_error'])){
 
         <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
 
+        <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
+        <a href="/wishlist/auth/login.php" class="btn btn-warning">Login</a>
+
+
         <!-- SEARCH FORM -->
         <form method="GET" class="mb-3">
 
@@ -128,6 +132,31 @@ if(isset($_SESSION['wishlist_error'])){
                             <p><?php echo htmlspecialchars($row['description']); ?></p>
 
                             <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
+
+            <?php
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+            foreach ($rows as $row) {
+                ?>
+
+                <div class="col-md-4 mb-3">
+
+                    <div class="card">
+
+                        <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>" height="200">
+
+                        <div class="card-body">
+
+                            <h5><?php echo htmlspecialchars($row['name']); ?></h5>
+
+                            <p><?php echo htmlspecialchars($row['description']); ?></p>
+
+                            <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
+
+                            <a href="/wishlist/views/wishlist/wishlist-add.php?product_id=<?= $row['id']; ?>"
+                                class="btn btn-primary">
+                                Add to Wishlist
+                            </a>
+
                         </div>
 
                     </div>

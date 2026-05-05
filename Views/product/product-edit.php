@@ -13,8 +13,14 @@ $user_id = $_SESSION['user_id'];
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $stmt = $conn->prepare("SELECT * FROM products WHERE id=? AND user_id=?");
-    $stmt->bind_param("ii", $id, $user_id);
+    if ($_SESSION['role'] == 'superadmin') {
+        $stmt = $conn->prepare("SELECT * FROM products WHERE id=?");
+        $stmt->bind_param("i", $id);
+    } else {
+
+        $stmt = $conn->prepare("SELECT * FROM products WHERE id=? AND user_id=?");
+        $stmt->bind_param("ii", $id, $user_id);
+    }
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
@@ -38,15 +44,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $target_file = $target_dir . $filename;
 
         if (move_uploaded_file($_FILES["imgPath"]["tmp_name"], $target_file)) {
-            
+
             $imgPath = "assets/image/" . $filename;
         }
     }
-
-    // update query
-    $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, imgPath=? WHERE id=? AND user_id=?");
-    $stmt->bind_param("ssdssi", $name, $description, $price, $imgPath, $id, $user_id);
-
+    if ($_SESSION['role'] == 'superadmin') {
+        $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, imgPath=? WHERE id=? ");
+        $stmt->bind_param("ssdsi", $name, $description, $price, $imgPath, $id);
+    } else {
+        // update querye
+        $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, imgPath=? WHERE id=? AND user_id=?");
+        $stmt->bind_param("ssdsii", $name, $description, $price, $imgPath, $id, $user_id);
+    }
     if ($stmt->execute()) {
         header("Location: index.php");
         exit();
@@ -58,44 +67,47 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
 <!doctype html>
 <html lang="en">
+
 <head>
     <title>Edit Product</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
+
 <body>
 
-<div class="container mt-4">
-    <h3>Edit Product</h3>
+    <div class="container mt-4">
+        <h3>Edit Product</h3>
 
-    <form method="post" enctype="multipart/form-data">
-        <input type="hidden" name="id" value="<?= $row['id']; ?>">
-        <input type="hidden" name="old_img" value="<?= $row['imgPath']; ?>">
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" name="id" value="<?= $row['id']; ?>">
+            <input type="hidden" name="old_img" value="<?= $row['imgPath']; ?>">
 
-        <div class="form-group">
-            <label>Name</label>
-            <input type="text" name="name" class="form-control" value="<?= $row['name']; ?>">
-        </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" name="name" class="form-control" value="<?= $row['name']; ?>">
+            </div>
 
-        <div class="form-group">
-            <label>Current Image</label><br>
-            <img src="../../<?= $row['imgPath']; ?>" width="120"><br><br>
-            <input type="file" name="imgPath" class="form-control">
-        </div>
+            <div class="form-group">
+                <label>Current Image</label><br>
+                <img src="../../<?= $row['imgPath']; ?>" width="120"><br><br>
+                <input type="file" name="imgPath" class="form-control">
+            </div>
 
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" name="description" class="form-control" value="<?= $row['description']; ?>">
-        </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" name="description" class="form-control" value="<?= $row['description']; ?>">
+            </div>
 
-        <div class="form-group">
-            <label>Price</label>
-            <input type="text" name="price" class="form-control" value="<?= $row['price']; ?>">
-        </div>
+            <div class="form-group">
+                <label>Price</label>
+                <input type="text" name="price" class="form-control" value="<?= $row['price']; ?>">
+            </div>
 
-        <button type="submit" class="btn btn-success">Update</button>
-        <a href="index.php" class="btn btn-secondary">Back</a>
-    </form>
-</div>
+            <button type="submit" class="btn btn-success">Update</button>
+            <a href="index.php" class="btn btn-secondary">Back</a>
+        </form>
+    </div>
 
 </body>
+
 </html>

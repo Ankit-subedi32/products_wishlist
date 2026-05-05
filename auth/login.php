@@ -18,7 +18,6 @@
 
   session_start();
   include "../config/connection.php";
-
   if (isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -36,8 +35,16 @@
         $_SESSION['username'] = $row['username'];
         $_SESSION['name'] = $name;
         $_SESSION['role'] = $row['role'];
-        header("location: ../Views/product/index.php");
+
+        
+        if($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'superadmin'){
+          header("location: ../Views/product/index.php");
         exit();
+        }
+        else{
+          header("location: ../Views/landing/index.php");
+        exit();
+        }
       } else {
         echo "<div class='container'><div class='alert alert-danger text-center'>Invalid password.</div></div>";
       }
