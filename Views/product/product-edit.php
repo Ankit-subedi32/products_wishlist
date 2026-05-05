@@ -40,13 +40,44 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // if new image uploaded
     if (!empty($_FILES['imgPath']['name'])) {
         $target_dir = "../../assets/image/";
-        $filename = basename($_FILES["imgPath"]["name"]);
-        $target_file = $target_dir . $filename;
-
-        if (move_uploaded_file($_FILES["imgPath"]["tmp_name"], $target_file)) {
-
-            $imgPath = "assets/image/" . $filename;
+        $target_file = $target_dir . basename($_FILES["imgPath"]["name"]);
+        $uploadOk = 1;
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        $check = getimagesize($_FILES["imgPath"]["tmp_name"]);   // return array like height , width, mime 
+        if ($check === false) {
+            $fileErr = "File is not an image.";
+            $uploadOk = 0;
         }
+
+        // Check file size
+        if ($_FILES["imgPath"]["size"] > 500000) {
+            echo "Sorry, your file is too large.";
+            $uploadOk = 0;
+        }
+
+        if (
+            $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
+            && $imageFileType != "gif"
+        ) {
+            echo "<div class='alert alert-danger'>Sorry, only JPG, JPEG, PNG & GIF files are allowed.</div>";
+
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            echo "Sorry, your file was not uploaded.";
+        }
+        if ($uploadOk == 1) {
+            if (move_uploaded_file($_FILES["imgPath"]["tmp_name"], $target_file)) {
+
+                $imgPath = "assets/image/" . $filename;
+            } else {
+                $fileErr = "Sorry, there was an error uploading your file.";
+            }
+        }
+    } else {
+        echo "No file uploaded or upload error.";
     }
     if ($_SESSION['role'] == 'superadmin') {
         $stmt = $conn->prepare("UPDATE products SET name=?, description=?, price=?, imgPath=? WHERE id=? ");
@@ -81,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <form method="post" enctype="multipart/form-data">
             <input type="hidden" name="id" value="<?= $row['id']; ?>">
             <input type="hidden" name="old_img" value="<?= $row['imgPath']; ?>">
+            <!-- hidden garyara chai id ra old image lai use  garyaxam id na huni vaya kun ko edit garne taha hidaina  aane old_img chai purano image ko laghi yedi naya image upload garyana vane   -->
 
             <div class="form-group">
                 <label>Name</label>
