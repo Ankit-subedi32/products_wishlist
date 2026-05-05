@@ -24,7 +24,9 @@ if (!isset($_SESSION['user_id'])) {
   <div class="container">
     <a href="/wishlist/auth/login.php" class="btn btn-danger">Logout</a>
     <a href="product-add.php" class="btn btn-warning">Add Product</a>
-
+    <div>Hello, 
+      <?=  $_SESSION['name']; ?>
+    </div>
     <table class="table">
       <thead>
         <tr>
@@ -42,7 +44,6 @@ if (!isset($_SESSION['user_id'])) {
 
         <?php
         if ($_SESSION['role'] == "superadmin") {
-          //   paxi aadmin role gatrya paxi halna ko laghi
           $sql = "SELECT * FROM products";
           $result = $conn->query($sql);
         } else {
