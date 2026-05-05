@@ -24,8 +24,18 @@ if (!isset($_SESSION['user_id'])) {
   <div class="container">
     <a href="/wishlist/auth/login.php" class="btn btn-danger">Logout</a>
     <a href="product-add.php" class="btn btn-warning">Add Product</a>
-    <div>Hello, 
-      <?=  $_SESSION['name']; ?>
+    <?php
+    if ($_SESSION['role'] == "superadmin") {
+
+      ?>
+      <a href="../user/users.php" class="btn btn-warning">User</a>
+      <?php
+
+    }
+
+    ?>
+    <div>Hello,
+      <?= $_SESSION['name']; ?>
     </div>
     <table class="table">
       <thead>

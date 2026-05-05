@@ -62,7 +62,7 @@ if (!isset($_SESSION['user_id'])) {
 
         }
         if (empty($_POST["price"])) {
-            $descErr = "Cannot be Empty";
+            $priceErr = "Cannot be Empty";
 
         } else {
             $price = test($_POST["price"]);
@@ -94,7 +94,6 @@ if (!isset($_SESSION['user_id'])) {
                 $uploadOk = 0;
             }
 
-            // Allow certain file formats
             if (
                 $imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
                 && $imageFileType != "gif"
@@ -124,11 +123,12 @@ if (!isset($_SESSION['user_id'])) {
 
         if (!empty($name) && !empty($description) && !empty($imgPath) && !empty($price)) {
 
-
             $name = $_POST['name'];
             $description = $_POST['description'];
             $price = $_POST['price'];
             $user_id = $_SESSION['user_id'];
+
+            //already exist or not
             $checkSql = "SELECT id FROM products WHERE name = ? AND imgPath = ? AND description = ? AND price =? AND user_id =?";
             $checkStmt = $conn->prepare($checkSql);
             $checkStmt->bind_param("sssdi", $name, $imgPath, $description, $price, $user_id);
@@ -139,14 +139,10 @@ if (!isset($_SESSION['user_id'])) {
                 echo "<div class='alert alert-danger'>Error: A news item with this name already exists</div>";
             } else {
                 $stmt = $conn->prepare("INSERT INTO products (name, imgPath, description, price, user_id) VALUES (?,?,?,?,?)");
-                if ($stmt === false) {
-                    die("Prepare failed: " . $conn->error);
-                }
                 $stmt->bind_param("sssdi", $name, $imgPath, $description, $price, $user_id);
 
                 if ($stmt->execute()) {
-                    echo "Product added successfully!";
-                    header("Location: " . $_SERVER['PHP_SELF']); // for prevention of form submition on page reaload
+                    header("Location: " . $_SERVER['PHP_SELF'] . "?message=Product+added+Successfully"); // for prevention of form submition on page reaload
                     exit();
 
                 } else {

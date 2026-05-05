@@ -23,7 +23,7 @@ if ($page < 1) {            //page 1 vanda badi na vaya page 1 rakhne
 
 $offset = ($page - 1) * $limit;   // data chai kati bata set garne page ma like (1-1)*6 = 0 first ma 0 bata start garne =>(1-6) first ma (7-12)=>second ma first ko lai skip garxa 
 
-$searchLike = "%$search%"; 
+$searchLike = "%$search%";
 
 //kati ota xa vanayara herna lai 
 $countQuery = "
@@ -69,136 +69,137 @@ $result = $stmt->get_result();
 
 <head>
     <title>Products</title>
-    <link rel="stylesheet"
-          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
 
 <body>
 
-<div class="container mt-4">
+    <div class="container mt-4">
 
-<?php
-if(isset($_SESSION['user_id'])){
-    ?>
-    
-
-     <a href="../../auth/logout.php" class="btn btn-danger">Logout</a>
-     <?php
-}
-
-?>
-    <h2>
         <?php
-        if (isset($_SESSION['role'])) {
-            if ($_SESSION['role'] == 'user' || $_SESSION['role'] == 'admin' ||  $_SESSION['role'] == 'superadmin') {
-                echo "Welcome, " . $_SESSION['name'];
-            }
+        if (isset($_SESSION['user_id'])) {
+            ?>
+
+
+            <a href="../../auth/logout.php?location=landing" class="btn btn-danger">Logout</a>
+            <?php
         }
+
         ?>
-    </h2>
+        <h2>
+            <?php
+            if (isset($_SESSION['role'])) {
+                if ($_SESSION['role'] == 'user' || $_SESSION['role'] == 'admin' || $_SESSION['role'] == 'superadmin') {
+                    echo "Welcome, " . $_SESSION['name'];
+                }
+            }
+            ?>
+        </h2>
 
-    <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
+        <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
+        <a href="/wishlist/auth/login.php" class="btn btn-warning">Login</a>
 
-    <!-- SEARCH FORM -->
-    <form method="GET" class="mb-3">
 
-        <input type="text"
-               name="search"
-               class="form-control mb-2"
-               value="<?php echo htmlspecialchars($search); ?>"
-               placeholder="Search products">
+        <!-- SEARCH FORM -->
+        <form method="GET" class="mb-3">
 
-        <button type="submit" class="btn btn-success">
-            Search
-        </button>
+            <input type="text" name="search" class="form-control mb-2" value="<?php echo htmlspecialchars($search); ?>"
+                placeholder="Search products">
 
-    </form>
+            <button type="submit" class="btn btn-success">
+                Search
+            </button>
 
-    <h3>All Products</h3>
+        </form>
 
-    <!-- PRODUCT LIST -->
-    <div class="row text-center">
+        <h3>All Products</h3>
 
-        <?php
-        $rows = $result->fetch_all(MYSQLI_ASSOC);
-        foreach($rows as $row ) {
-        ?>
+        <!-- PRODUCT LIST -->
+        <div class="row text-center">
 
-            <div class="col-md-4 mb-3">
+            <?php
+            $rows = $result->fetch_all(MYSQLI_ASSOC);
+            foreach ($rows as $row) {
+                ?>
 
-                <div class="card">
+                <div class="col-md-4 mb-3">
 
-                    <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>"
-                         height="200">
+                    <div class="card">
 
-                    <div class="card-body">
+                        <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>" height="200">
 
-                        <h5><?php echo htmlspecialchars($row['name']); ?></h5>
+                        <div class="card-body">
 
-                        <p><?php echo htmlspecialchars($row['description']); ?></p>
+                            <h5><?php echo htmlspecialchars($row['name']); ?></h5>
 
-                        <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
+                            <p><?php echo htmlspecialchars($row['description']); ?></p>
 
-            
+                            <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
+
+                            <a href="/wishlist/views/wishlist/wishlist-add.php?product_id=<?= $row['id']; ?>"
+                                class="btn btn-primary">
+                                Add to Wishlist
+                            </a>
+
+                        </div>
 
                     </div>
 
                 </div>
 
-            </div>
-
-        <?php
-        }
-        ?>
-
-    </div>
-
-    <!-- PAGINATION -->
-    <nav>
-        <ul class="pagination justify-content-center">
-
-            <!-- PREVIOUS -->
-             <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne disable le chai html ko class ma disabled vanyara garxa tei vayara echo garyako  -->
-            <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">   
-            
-                <a class="page-link"
-                   href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>">
-                    Previous
-                </a>
-            </li>
-
-            <!-- PAGE NUMBERS -->
-            <?php
-            for ($i = 1; $i <= $totalPages; $i++) {
-            ?>
-
-                <li class="page-item <?php if ($i == $page) echo 'active'; ?>">
-
-                    <a class="page-link"
-                       href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>">
-
-                        <?php echo $i; ?>
-
-                    </a>
-
-                </li>
-
-            <?php
+                <?php
             }
             ?>
 
-            <!-- NEXT -->
-            <li class="page-item <?php if ($page >= $totalPages) echo 'disabled'; ?>">
-                <a class="page-link"
-                   href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>">
-                    Next
-                </a>
-            </li>
+        </div>
 
-        </ul>
-    </nav>
+        <!-- PAGINATION -->
+        <nav>
+            <ul class="pagination justify-content-center">
 
-</div>
+                <!-- PREVIOUS -->
+                <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne disable le chai html ko class ma disabled vanyara garxa tei vayara echo garyako  -->
+                <li class="page-item <?php if ($page <= 1)
+                    echo 'disabled'; ?>">
+
+                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>">
+                        Previous
+                    </a>
+                </li>
+
+                <!-- PAGE NUMBERS -->
+                <?php
+                for ($i = 1; $i <= $totalPages; $i++) {
+                    ?>
+
+                    <li class="page-item <?php if ($i == $page)
+                        echo 'active'; ?>">
+
+                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>">
+
+                            <?php echo $i; ?>
+
+                        </a>
+
+                    </li>
+
+                    <?php
+                }
+                ?>
+
+                <!-- NEXT -->
+                <li class="page-item <?php if ($page >= $totalPages)
+                    echo 'disabled'; ?>">
+                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>">
+                        Next
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+    </div>
 
 </body>
+
 </html>

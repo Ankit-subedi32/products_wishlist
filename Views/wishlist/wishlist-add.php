@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 $product_id = $_GET['product_id'];
 
-// prevent duplicate
+// prevent duplicate (user_id ra product_id xa ke nai vanyara)
 $check = $conn->prepare("SELECT * FROM wishlist WHERE user_id=? AND product_id=?");
 $check->bind_param("ii", $user_id, $product_id);
 $check->execute();
@@ -22,7 +22,7 @@ if ($result->num_rows == 0) {
     $stmt->execute();
 }
 
-// redirect back
+// back to index page of wishlist
 header("Location: index.php");
 exit();
 
