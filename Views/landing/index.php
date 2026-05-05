@@ -128,12 +128,6 @@ if(isset($_SESSION['wishlist_error'])){
                             <p><?php echo htmlspecialchars($row['description']); ?></p>
 
                             <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
-
-                            <a href="/wishlist/views/wishlist/wishlist-add.php?product_id=<?= $row['id']; ?>"
-                                class="btn btn-primary">
-                                Add to Wishlist
-                            </a>
-
                         </div>
 
                     </div>
