@@ -6,6 +6,11 @@ if (!isset($_SESSION['user_id'])) {
  header("Location: /../../auth/login.php");
     exit();
 }
+
+
+  if($_SESSION['role'] == 'user'){
+    header("Location: ../landing/index.php");
+}
 // user le superadmin ko delete garna mildaina 
 if ($_SESSION['role'] !== 'superadmin') {
     echo "Access denied!";

@@ -6,6 +6,10 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
+  if($_SESSION['role'] == 'user'){
+    header("Location: ../landing/index.php");
+}
+
 $user_id = $_SESSION['user_id'];
 $user_role = $_SESSION['role']; 
 

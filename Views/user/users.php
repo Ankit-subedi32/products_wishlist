@@ -6,6 +6,10 @@ if (!isset($_SESSION['user_id'])) {
     header("Location: ../../auth/login.php");
   exit();
 } else {
+
+  if($_SESSION['role'] == 'user'){
+    header("Location: ../landing/index.php");
+}
   ?>
 
   <!doctype html>
