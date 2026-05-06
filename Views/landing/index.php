@@ -24,7 +24,7 @@ $offset = ($page - 1) * $limit;   // data chai kati bata set garne page ma like 
 
 $searchLike = "%$search%";
 
-//kati ota xa vanayara herna lai 
+//search kati ota xa vanayara herna lai  
 $countQuery = "
     SELECT COUNT(*) as total 
     FROM products 
@@ -40,7 +40,7 @@ $countStmt->execute();
 $countResult = $countStmt->get_result();
 $countRow = $countResult->fetch_assoc();
 
-$totalProducts = $countRow['total'];  // for readable using total alias
+$totalProducts = $countRow['total'];  // for readable using total alias (Count*)
 //totalProducts le total kati ota products xa lauxa .
 
 
@@ -62,9 +62,9 @@ $stmt->execute();
 
 $result = $stmt->get_result();
 
-if(isset($_SESSION['wishlist_error'])){
-    echo "<div class='alert alert-danger'>".$_SESSION['wishlist_error']."</div>";
-    unset($_SESSION['wishlist_error']);
+if (isset($_SESSION['Already'])) {
+    echo "<div class='alert alert-danger'>" . $_SESSION['Already'] . "</div>";
+    unset($_SESSION['Already']);
 }
 ?>
 
@@ -92,9 +92,20 @@ if(isset($_SESSION['wishlist_error'])){
         </h2>
 
         <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
+        <?php
+        if (!isset($_SESSION['user_id'])) {
+            ?>
+            <a href="/wishlist/auth/login.php" class="btn btn-warning">Login</a>
+            <?php
 
-        <a href="/wishlist/views/wishlist/index.php" class="btn btn-info">Wishlist</a>
-        <a href="/wishlist/auth/login.php" class="btn btn-warning">Login</a>
+        } else {
+            ?>
+            <a href="/wishlist/auth/logout.php?location=landing" class="btn btn-danger">Logout</a>
+            <?php
+
+        }
+        ?>
+
 
 
         <!-- SEARCH FORM -->
@@ -120,26 +131,6 @@ if(isset($_SESSION['wishlist_error'])){
                 ?>
 
                 <div class="col-md-4 mb-3">
-
-                    <div class="card">
-
-                        <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>" height="200">
-
-                        <div class="card-body">
-
-                            <h5><?php echo htmlspecialchars($row['name']); ?></h5>
-
-                            <p><?php echo htmlspecialchars($row['description']); ?></p>
-
-                            <p>Price: <?php echo htmlspecialchars($row['price']); ?></p>
-
-            <?php
-            $rows = $result->fetch_all(MYSQLI_ASSOC);
-            foreach ($rows as $row) {
-                ?>
-
-                <div class="col-md-4 mb-3">
-
                     <div class="card">
 
                         <img src="../../<?php echo htmlspecialchars($row['imgPath']); ?>" height="200">
@@ -160,7 +151,6 @@ if(isset($_SESSION['wishlist_error'])){
                         </div>
 
                     </div>
-
                 </div>
 
                 <?php
@@ -169,50 +159,52 @@ if(isset($_SESSION['wishlist_error'])){
 
         </div>
 
-        <!-- PAGINATION -->
-        <nav>
-            <ul class="pagination justify-content-center">
+    </div>
 
-                <!-- PREVIOUS -->
-                <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne  -->
-                <li class="page-item <?php if ($page <= 1)
-                    echo 'disabled'; ?>">
+    <!-- PAGINATION -->
+    <nav>
+        <ul class="pagination justify-content-center">
 
-                    <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>">
-                        Previous
-                    </a>
-                </li>
+            <!-- PREVIOUS -->
+            <!-- page yeuta aathwa thorai xa vane previous na aawos vanyara disable garne  -->
+            <li class="page-item <?php if ($page <= 1)
+                echo 'disabled'; ?>">
 
-                <!-- PAGE NUMBERS -->
-                <?php
-                for ($i = 1; $i <= $totalPages; $i++) {
-                    ?>
+                <a class="page-link" href="?page=<?php echo $page - 1; ?>&search=<?php echo $search; ?>">
+                    Previous
+                </a>
+            </li>
 
-                    <li class="page-item <?php if ($i == $page)
-                        echo 'active'; ?>">
-
-                        <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>">
-
-                            <?php echo $i; ?>
-
-                        </a>
-
-                    </li>
-
-                    <?php
-                }
+            <!-- PAGE NUMBERS -->
+            <?php
+            for ($i = 1; $i <= $totalPages; $i++) {
                 ?>
 
-                <!-- NEXT -->
-                <li class="page-item <?php if ($page >= $totalPages)
-                    echo 'disabled'; ?>">
-                    <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>">
-                        Next
+                <li class="page-item <?php if ($i == $page)
+                    echo 'active'; ?>">
+
+                    <a class="page-link" href="?page=<?php echo $i; ?>&search=<?php echo $search; ?>">
+
+                        <?php echo $i; ?>
+
                     </a>
+
                 </li>
 
-            </ul>
-        </nav>
+                <?php
+            }
+            ?>
+
+            <!-- NEXT -->
+            <li class="page-item <?php if ($page >= $totalPages)
+                echo 'disabled'; ?>">
+                <a class="page-link" href="?page=<?php echo $page + 1; ?>&search=<?php echo $search; ?>">
+                    Next
+                </a>
+            </li>
+
+        </ul>
+    </nav>
 
     </div>
 

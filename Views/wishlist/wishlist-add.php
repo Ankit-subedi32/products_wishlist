@@ -22,11 +22,13 @@ if ($result->num_rows == 0) {
     $stmt->execute();
 }
 else{
- $_SESSION['wishlist_error'] =  "Already in wishlist";
+ $_SESSION['Already'] =  "Already in wishlist";
 }
 
 // redirect back
-header("Location: ../landing/index.php");
+// header("Location: ../landing/index.php");     yesle chai always landing page ma ko forst mai redirect garyo
+header("Location: " . $_SERVER['HTTP_REFERER']);
+//yo use garda same page ma redirect garxa main page ma gardina
 exit();
 
 ?>
