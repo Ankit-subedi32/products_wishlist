@@ -20,6 +20,7 @@ if ($result->num_rows == 0) {
     $stmt = $conn->prepare("INSERT INTO wishlist (user_id, product_id) VALUES (?, ?)");
     $stmt->bind_param("ii", $user_id, $product_id);
     $stmt->execute();
+     $_SESSION['done'] =  "Added Successfully";
 }
 else{
  $_SESSION['Already'] =  "Already in wishlist";

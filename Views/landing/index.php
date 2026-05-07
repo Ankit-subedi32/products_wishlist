@@ -66,6 +66,10 @@ if (isset($_SESSION['Already'])) {
     echo "<div class='alert alert-danger'>" . $_SESSION['Already'] . "</div>";
     unset($_SESSION['Already']);
 }
+if (isset($_SESSION['done'])) {
+    echo "<div class='alert alert-success'>" . $_SESSION['done'] . "</div>";
+    unset($_SESSION['done']);
+}
 ?>
 
 <!DOCTYPE html>
