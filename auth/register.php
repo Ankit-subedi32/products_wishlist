@@ -86,7 +86,7 @@
             <div class="form-group">
                 <label for="">Firstname:</label>
                 <input type="text" name="firstname" id="firstname" class="form-control" placeholder=""
-                    aria-describedby="helpId">
+                    aria-describedby="firstnameMsg">
 
                 <small id="firstnameMsg" class="text-danger"></small>
             </div>
@@ -95,21 +95,21 @@
             <div class="form-group">
                 <label for="">Lastname:</label>
                 <input type="text" name="lastname" id="lastname" class="form-control" placeholder=""
-                    aria-describedby="helpId">
+                    aria-describedby="lastnameMsg">
                 <small id="lastnameMsg" class="text-danger"></small>
             </div>
 
             <div class="form-group">
                 <label for="">Username(Email):</label>
                 <input type="email" name="username" id="username" class="form-control" placeholder=""
-                    aria-describedby="helpId">
+                    aria-describedby="usernameMsg">
                 <small id="usernameMsg" class="text-danger"></small>
             </div>
 
             <div class="form-group">
                 <label for="">Password:</label>
                 <input type="password" name="password" id="password" class="form-control" placeholder=""
-                    aria-describedby="helpId">
+                    aria-describedby="passowrdMsg">
                 <small id="passwordMsg" class="text-danger"></small>
             </div>
             <div class="text-center">
